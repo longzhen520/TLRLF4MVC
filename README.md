@@ -1,5 +1,5 @@
-## LRLF4MVC
-code of LRLF4MVC:Tensor low-rank and low-frequency for scalable Multi-view clustering
+## TLRLF4MVC
+code of TLRLF4MVC:Tensor low-rank and low-frequency for scalable Multi-view clustering
 
 ------------------------------------------------------
 
