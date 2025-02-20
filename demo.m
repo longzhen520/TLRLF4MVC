@@ -8,7 +8,7 @@ addpath('datasets','transform', 'Utility')
 
 
 % Define the list of datasets
-ds = {'CCV','ALOI' };
+ds = {'CCV' };
 
 % Iterate through each dataset
 for dsi = 1:1:length(ds)
@@ -21,37 +21,37 @@ for dsi = 1:1:length(ds)
 
      switch data
             case 'CCV'      
-               load('CCV.mat');  load('CCV_transform.mat')
+               load('CCV.mat'); 
                     Lambda=1e-2;
                     Gamma=1e-3;
                     Mu=1e-1;
         
             case 'Caltech102'      
-               load('Caltech102.mat'); load('Caltech102_transform.mat')
+               load('Caltech102.mat'); 
                     Lambda=1e-4;
                     Gamma=1e-1;
                     Mu=1e-4; 
 
             case 'ALOI'      
-                load('ALOI.mat');  load('ALOI_transform.mat')
+                load('ALOI.mat'); 
                      Lambda=1;
                      Gamma=1e-3;
                      Mu=1e-1;   
 
             case 'NUSWIDEOBJ'   
-                   load('NUSWIDEOBJ.mat');load('Nus_transform.mat')
+                   load('NUSWIDEOBJ.mat');
                      Lambda=1e-4;
                      Gamma=1;
                      Mu=1e-4; 
         
             case 'AwAfea'      
-                 load('AwAfea.mat'); load('AWA_transform.mat');
+                 load('AwAfea.mat'); 
                      Lambda=1e-4;
                      Gamma=1e-1;
                      Mu=1e-1;
         
             case 'cifar10'   
-                 load('cifar10.mat');  load('cifar_transform.mat')
+                 load('cifar10.mat');  
                      Lambda=1e-4;
                      Gamma=1e-3;
                      Mu=0.1;
@@ -61,7 +61,25 @@ for dsi = 1:1:length(ds)
 
 V = size(X,2);
 N= length(Y);
-
+ if ~exist('transform', 'dir')
+   %% generate GFT (needs to tune parameters)
+    cls_num = length(unique(Y));
+    for v=1:V
+        X1{v}=normalize(X{v},2);
+    end
+      X_pre = cat(2, X1{:,:}); 
+      pred_label = litekmeans(X_pre,cls_num,'MaxIter',1000, 'Replicates',3);
+      options = [];
+      options.NeighborMode = 'Supervised';
+      options.gnd = pred_label;
+      options.WeightMode = 'Binary';
+      options.t = 1;
+      W = constructW(X_pre,options);
+      [Fin,S]=eig(full(W));
+ else
+     load(strcat(dataName, '_','transform.mat')')
+ end
+% strcat(dataName, '_','transform.mat')
 
 fprintf('The Nonlinear Anchor Embeeding：');
 for it = 1:V
@@ -80,18 +98,7 @@ clear feaVec dist sigma dist Anchor it
 % Gamma=[1e-4,1e-3,1e-2,1e-1,1];
 % Lambda=[1e-4,1e-3,1e-2,1e-1,1];
 % Mu=[1e-4,1e-3,1e-2,1e-1,1];
-%% generate GFT
-%     for v=1:V
-%         X{v}=normalize(X{v},2);
-%     end
-%       pred_label = litekmeans(X_pre,cls_num,'MaxIter',1000, 'Replicates',3);
-%       options = [];
-%       options.NeighborMode = 'Supervised';
-%       options.gnd = pred_label;
-%       options.WeightMode = 'Binary';
-%       options.t = 1;
-%       W = constructW(X_pre,options);
-%       [Fin,S]=eig(full(W));
+
 
 
 transform.L =Fin; 
